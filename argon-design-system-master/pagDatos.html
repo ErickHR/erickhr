@@ -1,0 +1,338 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>
+<script>
+    let objetos = []
+    let arrDepart = []
+    function cargarObjetos() {
+        fetch('http://sistema.shalomempresarial.com/android/jsonterminal')
+            .then(response => response.json())
+            .then(json => {
+                objetos = json['Map'];
+                console.log(objetos)
+                departamento()
+                mostrarlistaDepartamento()
+                mostrarInforDepart('AMAZONAS')
+            })
+    }
+    function mostrarlistaDepartamento() {
+        let listDepartamentos = document.getElementById('listaDepartamentos')
+        //         listDepartamentos.innerHTML = `<div class="example">
+        //   <input type="text" placeholder="Search.." name="search">
+        // </div>`
+        listDepartamentos.innerHTML = '<h2>Departamento</h2>'
+        arrDepart.forEach((item, index) => {
+            listDepartamentos.innerHTML = listDepartamentos.innerHTML + `<li class="list-group-item list-group-item-action"  onclick="mostrarInforDepart('` + item + `')">` + item + `</li>`
+        });
+
+    }
+    function departamento() {
+        objetos.forEach((item, index) => {
+            arrDepart.push(item['departamento'])
+        });
+
+        arrDepart.sort()
+        unicosDepartamentos()
+    }
+    function unicosDepartamentos() {
+        let newarrDepart = []
+        arrDepart.forEach((item, index) => {
+            if (!newarrDepart.includes(item)) {
+                newarrDepart.push(item)
+            }
+        })
+        arrDepart.length = 0;
+        arrDepart = newarrDepart
+
+    }
+    // function mostrarInforDepart(depart) {
+
+    //     objetos.forEach((item, index) => {
+    //         if (item.departamento == depart) {
+    //             // if (cant == 0) {
+    //             //     titulo.innerHTML = depart
+    //             //     zona.innerHTML = zona.innerHTML + `<li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#` + item.zona + `" title="Latitud:  ` + item.latitud + ` Longitud: ` + item.longitud + `" data-content="Some content inside the popover">` + item.zona + `</a></li>`;
+    //             //     infoZona.innerHTML = infoZona.innerHTML + `
+    //             //         <div id="` + item.zona + `" class="container tab-pane active show"><br>
+    //             //             <p>Lugar: ` + item.lugar + ` <br/>Latitud:  ` + item.latitud + ` 
+    //             //                 <br/>Longitud: ` + item.longitud + ` Sp:  ` + item.sp + `
+    //             //                 <br/>Imagen: ` + item.imagen + ` <br/>Direccion:  ` + item.direccion + `
+    //             //                 <br/>Telefono: ` + item.telefono + `<br/> Hora Atencion:  ` + item.hora_atencion + `
+    //             //                 <br/>Detalles: ` + item.detalles + `</p>
+    //             //         </div>`  ;
+    //             //     cant++
+    //             // } else {
+    //             titulo.innerHTML = depart
+    //             zona.innerHTML = zona.innerHTML + `<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#` + item.zona + `" title="Latitud:  ` + item.latitud + ` Longitud: ` + item.longitud + ` data-content="Some content inside the popover">` + item.zona + `</a></li>`;
+    //             infoZona.innerHTML = infoZona.innerHTML + `
+    //                     <div id="` + item.zona + `" class="container tab-pane"><br>
+    //                         <h4>` + item.zona + `</h4>
+    //                         <div class="form-group">
+    //                             <p>Lugar: ` + item.lugar + ` <br/>Latitud:  ` + item.latitud + ` 
+    //                             <br/>Longitud: ` + item.longitud + ` Sp:  ` + item.sp + `
+    //                             <br/>Imagen: ` + item.imagen + ` <br/>Direccion:  ` + item.direccion + `
+    //                             <br/>Telefono: ` + item.telefono + `<br/> Hora Atencion:  ` + item.hora_atencion + `
+    //                             <br/>Detalles: ` + item.detalles + `</p>
+    //                     </div>`  ;
+    //             // }
+    //         }
+    //     });
+    // }
+    function cantidadDepart(depart) {
+        let repetidos = 0;
+        objetos.forEach((item, index) => {
+            if (item['departamento'] === depart.value)
+                repetidos++
+        });
+        return repetidos;
+    }
+
+    function mostrarInforDepart(depart) {
+        let zona = document.getElementById('zona');
+        let infoZona = document.getElementById('infoZona');
+        let titulo = document.getElementById('titulo')
+        let cantidad = 0
+        let destino = []
+        infoZona.innerHTML = '';
+        zona.innerHTML = '';
+        objetos.forEach((item, index) => {
+
+            if (item.departamento == depart) {
+
+                titulo.innerHTML = '<br/><h3>' + item.departamento + '<h3><h2>Zonas</h2>'
+                zona.innerHTML = zona.innerHTML + `<li class="nav-item"> <a class="nav-link` + (cantidad == 0 ? ' active show' : '') + `" data-toggle="tab" href="#menu` + item.ter_id + `">` + (item.zona === '' ? 'default' : item.zona) + `</a></li>`;
+                infoZona.innerHTML = infoZona.innerHTML + `
+                        <div id="menu` + item.ter_id + `" class="container tab-pane` + (cantidad == 0 ? ' active show' : '') + `"><br>
+                        ` + item.zona + `<br>
+                            <p>Lugar: ` + item.lugar + ` <br/>Latitud:  ` + item.latitud + ` 
+                                <br/>Longitud: ` + item.longitud + ` Sp:  ` + item.sp + `
+                                <br/>Imagen: ` + item.imagen + ` <br/>Direccion:  ` + item.direccion + `
+                                <br/>Telefono: ` + item.telefono + `<br/> Hora Atencion:  ` + item.hora_atencion + `
+                                <br/>Detalles: ` + item.detalles + `</p>
+                                <br/><h3>Destino: Provincias</h3>
+                                <div id="` + item.ter_id + `"></div>
+                                
+                        </div>`;
+                cantidad++
+                // console.log(item.destinos['PROVINCIAS'] + '' + index)
+                mostrarDestinos(item.destinos, item.ter_id)
+                // if (cantidad == 0) {
+                //     titulo.innerHTML = item.departamento
+                //     zona.innerHTML = zona.innerHTML + `<li class="nav-item"> <a class="nav-link active show" data-toggle="tab" href="#menu` + item.ter_id + `">` + (item.zona===''? 'default':item.zona) + `</a></li>`;
+                //     infoZona.innerHTML = infoZona.innerHTML + `
+                //         <div id="menu` + item.ter_id + `" class="container tab-pane active show"><br>
+                //         ` + item.zona + `<br>
+                //             <p>Lugar: ` + item.lugar + ` <br/>Latitud:  ` + item.latitud + ` 
+                //                 <br/>Longitud: ` + item.longitud + ` Sp:  ` + item.sp + `
+                //                 <br/>Imagen: ` + item.imagen + ` <br/>Direccion:  ` + item.direccion + `
+                //                 <br/>Telefono: ` + item.telefono + `<br/> Hora Atencion:  ` + item.hora_atencion + `
+                //                 <br/>Detalles: ` + item.detalles + `</p>
+                //         </div>`;
+
+                //     cantidad++
+                // } else {
+                //     titulo.innerHTML = item.departamento
+                //     zona.innerHTML = zona.innerHTML + `<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#menu` + item.ter_id + `">` + (item.zona===''? 'default':item.zona) + `</a></li>`;
+                //     infoZona.innerHTML = infoZona.innerHTML + `
+                //         <div id="menu` + item.ter_id + `" class="container tab-pane"><br>
+                //             ` + item.zona + `<br>
+                //             <p>Lugar: ` + item.lugar + ` <br/>Latitud:  ` + item.latitud + ` 
+                //                 <br/>Longitud: ` + item.longitud + ` Sp:  ` + item.sp + `
+                //                 <br/>Imagen: ` + item.imagen + ` <br/>Direccion:  ` + item.direccion + `
+                //                 <br/>Telefono: ` + item.telefono + `<br/> Hora Atencion:  ` + item.hora_atencion + `
+                //                 <br/>Detalles: ` + item.detalles + `</p>
+                //         </div>`;
+                // }
+            }
+
+        });
+    }
+
+    function mostrarDestinos(destinos, ter_id) {
+        let accordion = document.getElementById(ter_id)
+        accordion.innerHTML = '';
+        console.log(destinos[0].ORIGEN)
+        destinos.forEach((valor, index) => {
+            accordion.innerHTML = accordion.innerHTML + `
+                <div class="card">
+                <div class="card-header">
+                    <a class="card-link" data-toggle="collapse" href="#p` + (valor.PROVINCIAS == '' ? ('default' + index) : (valor.PROVINCIAS+index)) + `">
+                        ` + (valor.PROVINCIAS == '' ? ('default') : (valor.PROVINCIAS)) + `
+                    </a>
+                </div>
+                <div id="p` + (valor.PROVINCIAS === '' ? ('default' + index) : (valor.PROVINCIAS+index)) + `" class="collapse` + (index == 0 ? ' show' : '') + `" data-parent="#accordion">
+                    <div class="card-body">
+                        <p>ORIGEN:  ` + valor.ORIGEN + ` 
+                            <br/>HORA:
+                            <br/>&nbsp;&nbsp;&nbsp;&nbsp;SALIDA: ` + valor.HORA_DE_SALIDA + `
+                            <br/>&nbsp;&nbsp;&nbsp;&nbsp;LLEGADA: ` + valor.HORA_DE_LLEGADA + `
+                            <br/>DIA LLEGADA: ` + valor.NRO_DE_DIA_DE_LLEGADA + `
+                            <br/>SOBRES:  ` + valor.SOBRES + `
+                            <br/>COSTO: ` + valor.COSTOMIN + `
+                            <br/>PESP:  ` + valor.PESO + `
+                            <br/>VOLUMEN: ` + valor.VOLUMEN + `
+                            <br/>PAQUETERIA: ` + valor.PAQUETERIA + `</p>
+                    </div>
+                </div>
+                </div>`
+            // if(index==0){
+            //     accordion.innerHTML = accordion.innerHTML + `
+            //     <div class="card">
+            //     <div class="card-header">
+            //         <a class="card-link" data-toggle="collapse" href="#` + item.PROVINCIAS + `">
+            //         ` + item.PROVINCIAS + `
+            //         </a>
+            //     </div>
+            //     <div id="` + item.PROVINCIAS + `" class="collapse show" data-parent="#accordion">
+            //         <div class="card-body">
+            //             <p>ORIGEN:  ` + item.ORIGEN + ` 
+            //                 <br/>HORA:
+            //                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;SALIDA: ` + item.HORA_DE_SALIDA + `
+            //                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;LLEGADA: ` + item.HORA_DE_LLEGADA + `
+            //                 <br/>DIA LLEGADA: ` + item.NRO_DE_DIA_DE_LLEGADA + `
+            //                 <br/>SOBRES:  ` + item.SOBRES + `
+            //                 <br/>COSTO: ` + item.COSTOMIN + `
+            //                 <br/>PESP:  ` + item.PESO + `
+            //                 <br/>VOLUMEN: ` + item.VOLUMEN + `
+            //                 <br/>PAQUETERIA: ` + item.PAQUETERIA + `</p>
+            //         </div>
+            //     </div>
+            //     </div>`
+            // }else{
+            //     accordion.innerHTML = accordion.innerHTML + `
+            //     <div class="card">
+            //     <div class="card-header">
+            //         <a class="card-link" data-toggle="collapse" href="#` + item.PROVINCIAS + `">
+            //         ` + item.PROVINCIAS + `
+            //         </a>
+            //     </div>
+            //     <div id="` + item.PROVINCIAS + `" class="collapse" data-parent="#accordion">
+            //         <div class="card-body">
+            //             <p>ORIGEN:  ` + item.ORIGEN + ` 
+            //                 <br/>HORA:
+            //                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;SALIDA: ` + item.HORA_DE_SALIDA + `
+            //                 <br/>&nbsp;&nbsp;&nbsp;&nbsp;LLEGADA: ` + item.HORA_DE_LLEGADA + `
+            //                 <br/>DIA LLEGADA: ` + item.NRO_DE_DIA_DE_LLEGADA + `
+            //                 <br/>SOBRES:  ` + item.SOBRES + `
+            //                 <br/>COSTO: ` + item.COSTOMIN + `
+            //                 <br/>PESP:  ` + item.PESO + `
+            //                 <br/>VOLUMEN: ` + item.VOLUMEN + `
+            //                 <br/>PAQUETERIA: ` + item.PAQUETERIA + `</p>
+            //         </div>
+            //     </div>
+            //     </div>`
+            // }
+
+        });
+    }
+
+
+
+</script>
+
+<style>
+    * {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    /* Departamento */
+    #departamentos {
+        position: absolute;
+        width: 250px;
+        height: auto;
+    }
+
+    /* atributos */
+    #infoDepartamento {
+        position: absolute;
+        left: 250px;
+        width: 81%;
+        height: auto;
+    }
+
+    div.example input[type=text] {
+        padding: 10px;
+        font-size: 17px;
+        border: 1px solid grey;
+        float: left;
+        width: 80%;
+        background: #f1f1f1;
+    }
+
+    div.example button {
+        float: left;
+        width: 20%;
+        padding: 10px;
+        background: #2196F3;
+        color: white;
+        font-size: 17px;
+        border: 1px solid grey;
+        border-left: none;
+        cursor: pointer;
+    }
+
+    div.example button:hover {
+        background: #0b7dda;
+    }
+
+    div.example::after {
+        content: "";
+        clear: both;
+        display: table;
+    }
+</style>
+
+<body onload="cargarObjetos()">
+    <div id="todo">
+        <!-- departamentoe -->
+        <div id="departamentos">
+            <ul class="list-group list-group-flush" id="listaDepartamentos">
+            </ul>
+        </div>
+        <!-- fin departamentos -->
+
+        <!-- infoDepartamento -->
+        <div id="infoDepartamento">
+
+            <div class="mt-3">
+                <h2 id="titulo"></h2>
+                <br>
+                <ul class="nav nav-tabs" id="zona">
+                </ul>
+            </div>
+            <div id="zonas">
+                <div class="tab-content" id="infoZona">
+                </div>
+                <div class="tab-content" id="destinos">
+
+                    <div id="accordion">
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <!-- fin infoDepartamento -->
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+    </script>
+</body>
+
+</html>
